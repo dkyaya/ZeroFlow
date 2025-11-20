@@ -1,0 +1,29 @@
+{
+  "name": "zeroflow",
+  "version": "1.0.0",
+  "description": "ZeroFlow is a web-based calorie and nutrition tracking application built with Next.js 14, React, Prisma, and SQLite.   The goal of the final project is to provide users with a clean, simple, and accurate way to log food, track daily calories, and monitor progress over time.",
+  "main": "next.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkyaya/ZeroFlow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dkyaya/ZeroFlow/issues"
+  },
+  "homepage": "https://github.com/dkyaya/ZeroFlow#readme",
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "bcrypt": "^6.0.0",
+    "next": "^16.0.3",
+    "prisma": "^6.19.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}
