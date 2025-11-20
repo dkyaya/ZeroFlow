@@ -5,3 +5,13 @@ model User {
   password  String
   createdAt DateTime @default(now())
 }
+
+model FoodLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  calories  Int
+  createdAt DateTime @default(now())
+
+  User      User @relation(fields: [userId], references: [id])
+}
