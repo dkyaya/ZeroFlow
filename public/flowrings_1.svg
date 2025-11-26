@@ -1,0 +1,8 @@
+<svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#0A1A3A" stroke-width="10">
+    <!-- Outer ring -->
+    <circle cx="55" cy="55" r="42" />
+    <!-- Inner ring offset slightly upward for a sense of motion -->
+    <circle cx="55" cy="46" r="26" />
+  </g>
+</svg>

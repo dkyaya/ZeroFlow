@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/joachimjohnson/Documents/comp-sci/ZeroFlow/app/components/logo.jsx"],"sourcesContent":["\"use client\";\n\nimport { motion } from \"framer-motion\";\n\nexport default function Logo({ size = 48, className = \"\" }) {\n  return (\n    <motion.img\n      src=\"/flowrings_1.svg\"\n      alt=\"ZeroFlow Logo\"\n      width={size}\n      height={size}\n      className={`select-none ${className}`}\n      animate={{ rotate: 360 }}\n      transition={{\n        repeat: Infinity,\n        duration: 12,\n        ease: \"linear\"\n      }}\n    />\n  );\n}\n"],"names":[],"mappings":";;;;;AAEA;AAFA;;;AAIe,SAAS,KAAK,EAAE,OAAO,EAAE,EAAE,YAAY,EAAE,EAAE;IACxD,qBACE,6LAAC,uMAAM,CAAC,GAAG;QACT,KAAI;QACJ,KAAI;QACJ,OAAO;QACP,QAAQ;QACR,WAAW,CAAC,YAAY,EAAE,WAAW;QACrC,SAAS;YAAE,QAAQ;QAAI;QACvB,YAAY;YACV,QAAQ;YACR,UAAU;YACV,MAAM;QACR;;;;;;AAGN;KAhBwB"}}]
+}
