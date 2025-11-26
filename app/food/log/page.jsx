@@ -1,6 +1,7 @@
 // app/food/log/page.jsx
-// Page for users to add a food entry.
-// Sends POST request to the food log API.
+// Food logging page for ZeroFlow (Final Project Version)
+// Allows users to enter a food name + calorie amount
+// Submits to the /api/food/log API route using POST.
 
 "use client";
 
@@ -17,10 +18,13 @@ export default function LogFoodPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const res = await fetch("/api/food/log/route", {
+    const res = await fetch("/api/food/log", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, calories }),
+      body: JSON.stringify({
+        name,
+        calories: Number(calories),
+      }),
     });
 
     if (res.ok) {
@@ -40,6 +44,7 @@ export default function LogFoodPage() {
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Food name input */}
           <div>
             <label className="text-gray-700 mb-1 block">Food Name</label>
             <input
@@ -52,6 +57,7 @@ export default function LogFoodPage() {
             />
           </div>
 
+          {/* Calorie input */}
           <div>
             <label className="text-gray-700 mb-1 block">Calories</label>
             <input
@@ -64,6 +70,7 @@ export default function LogFoodPage() {
             />
           </div>
 
+          {/* Submit button */}
           <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"

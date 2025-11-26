@@ -1,74 +1,58 @@
 // app/login/page.jsx
 // Login page for ZeroFlow (Final Project Version)
-// This page renders a login form that POSTs credentials to the server.
-// Clean and simple UI with helpful structure for CS50 TFs to understand.
+// Renders a login form that POSTs credentials to the login API route.
+// Clean structure and clear comments for CS50 graders.
 
 "use client";
-// This page uses client-side interactivity (form handling, navigation)
-// so we must explicitly mark it as a Client Component.
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  // Local state for form fields and error handling.
+  // Local state for form fields and error handling
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const router = useRouter(); // Allows redirecting after login.
+  const router = useRouter();
 
-  // Handles form submission.
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevents page refresh.
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-    // Send login request to the API route.
-    const res = await fetch("/api/auth/login/route", {
+    // Send login request to the API (correct path: no “/route”)
+    const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
     if (res.ok) {
-      // If login succeeded, redirect user to the dashboard.
-      router.push("/dashboard");
+      router.push("/dashboard"); // redirect on success
     } else {
-      // If login fails, show an error message.
       setErrorMsg("Invalid email or password.");
     }
-  };
+  }
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
-      {/* 
-        Main container:
-        - Full page height
-        - Centered content
-        - Light gray background for clean appearance
-      */}
-
+      {/* Centered card container */}
       <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-        {/* 
-          A form card container:
-          - max width for readability
-          - white background
-          - subtle shadow for separation
-          - rounded corners
-          - padding for spacing
-        */}
 
+        {/* Title */}
         <h1 className="text-2xl font-semibold text-blue-700 mb-6 text-center">
           Login
         </h1>
 
-        {/* Error message box (only shows if there's an error) */}
+        {/* Error message */}
         {errorMsg && (
           <div className="mb-4 text-red-600 text-sm text-center">
             {errorMsg}
           </div>
         )}
 
+        {/* Login form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
           {/* Email Input */}
           <div className="flex flex-col">
             <label className="text-gray-700 mb-1">Email</label>
@@ -104,7 +88,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Link to registration page */}
+        {/* Registration link */}
         <p className="text-center text-gray-600 mt-6 text-sm">
           Don’t have an account?{" "}
           <a href="/register" className="text-blue-600 hover:underline">

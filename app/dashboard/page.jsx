@@ -1,17 +1,20 @@
 // app/dashboard/page.jsx
 // Dashboard page for ZeroFlow (Final Project Version)
-// Shows the user's daily calorie target, calories eaten, remaining calories,
-// and a simple list of logged foods for the current day.
-// This is a Server Component by default (no "use client").
+// Displays:
+// - Total calorie target
+// - Calories consumed
+// - Remaining calories
+// - Foods logged today
+// Uses a simple fetch to the summary API (no auth yet).
 
 async function getSummary() {
-  // Fetches daily summary from API route.
-  // Next.js fetch automatically caches unless specified otherwise.
-  // For dynamic data (like today's logs), we disable caching.
-  const res = await fetch("http://localhost:3000/api/summary/route", {
+  // Fetch daily summary from the API.
+  // cache: "no-store" ensures fresh data on each load.
+  const res = await fetch("http://localhost:3000/api/summary", {
     cache: "no-store",
   });
 
+  // If API fails, return safe defaults.
   if (!res.ok) {
     return {
       caloriesTarget: 0,
@@ -24,22 +27,15 @@ async function getSummary() {
 }
 
 export default async function DashboardPage() {
-  // Retrieves summary data for display.
+  // Load summary data
   const summary = await getSummary();
-
   const { caloriesTarget, caloriesConsumed, foods } = summary;
 
+  // Remaining calories (never negative)
   const remaining = Math.max(caloriesTarget - caloriesConsumed, 0);
 
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-10">
-      {/* 
-        Layout:
-        - top spacing
-        - centered content
-        - soft background
-      */}
-
       <h1 className="text-3xl font-semibold text-blue-700 mb-8">
         Your Dashboard
       </h1>
@@ -58,7 +54,11 @@ export default async function DashboardPage() {
             {caloriesConsumed} calories
           </p>
           <p>
-            <span className={`font-semibold ${remaining === 0 ? "text-red-600" : "text-green-700"}`}>
+            <span
+              className={`font-semibold ${
+                remaining === 0 ? "text-red-600" : "text-green-700"
+              }`}
+            >
               Remaining:
             </span>{" "}
             {remaining} calories
@@ -86,7 +86,7 @@ export default async function DashboardPage() {
           </ul>
         )}
 
-        {/* Log food link */}
+        {/* TODO: Add /food/log/page.jsx to make this real */}
         <a
           href="/food/log"
           className="mt-6 inline-block text-blue-600 hover:underline"

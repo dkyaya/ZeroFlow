@@ -1,5 +1,6 @@
 // app/food/search/page.jsx
-// Page to search for foods from the built-in FPV food list.
+// Search page for the built-in FPV food list.
+// Users can type a query, hit "Search", and get calories for common foods.
 
 "use client";
 
@@ -8,9 +9,23 @@ import { useState } from "react";
 export default function SearchFoodPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [error, setError] = useState("");
 
   async function handleSearch() {
-    const res = await fetch(`/api/food/search/route?q=${query}`);
+    setError("");
+
+    if (!query.trim()) {
+      setError("Please enter a food name.");
+      return;
+    }
+
+    const res = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`);
+
+    if (!res.ok) {
+      setError("Failed to fetch foods.");
+      return;
+    }
+
     const data = await res.json();
     setResults(data);
   }
@@ -21,6 +36,7 @@ export default function SearchFoodPage() {
         Search Foods
       </h1>
 
+      {/* Search bar + button */}
       <div className="flex gap-2 mb-6">
         <input
           type="text"
@@ -38,6 +54,10 @@ export default function SearchFoodPage() {
         </button>
       </div>
 
+      {/* Error message */}
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+
+      {/* Results */}
       <ul className="flex flex-col gap-3">
         {results.map((item, idx) => (
           <li
