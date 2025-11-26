@@ -1,11 +1,11 @@
 // app/api/summary/route.js
-// Returns the user's daily nutrition summary.
-// This is used by the dashboard to show calories eaten, target calories, and foods logged today.
+// Provides the daily nutrition summary for the dashboard.
+// FPV uses a placeholder userId (1) because authentication is not implemented yet.
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Utility: get today's date boundaries (midnight to midnight)
+// Helper: returns today's time window (00:00 → 23:59)
 function getTodayRange() {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -18,14 +18,12 @@ function getTodayRange() {
 
 export async function GET() {
   try {
-    // For FPV: We do NOT implement sessions/login state.
-    // We simply use a placeholder user ID (example: user #1).
-    // This will later be replaced with a real authentication system.
+    // FPV placeholder user
     const USER_ID = 1;
 
     const { start, end } = getTodayRange();
 
-    // Fetch all foods logged today by this user.
+    // Fetch all food logs from today
     const logs = await prisma.foodLog.findMany({
       where: {
         userId: USER_ID,
@@ -36,17 +34,15 @@ export async function GET() {
       },
     });
 
-    // Calculate total calories consumed.
+    // Sum calories for today's intake
     const caloriesConsumed = logs.reduce(
-      (total, item) => total + item.calories,
+      (sum, item) => sum + item.calories,
       0
     );
 
-    // For FPV, give every user a simple 2,200 calorie target.
-    // Later, this will be replaced with a full TDEE engine.
+    // FPV static calorie target
     const caloriesTarget = 2200;
 
-    // Format response data.
     return NextResponse.json(
       {
         caloriesTarget,
@@ -58,6 +54,7 @@ export async function GET() {
       },
       { status: 200 }
     );
+
   } catch (err) {
     console.error("Summary API error:", err);
     return NextResponse.json(

@@ -1,21 +1,23 @@
 // app/api/auth/login/route.js
-// Handles user login.
-// Verifies email + password and returns a simple success response.
-// (CS50 FPV version does NOT implement full JWT/cookies yet.)
-
+// Handles user login for the FPV (no JWT/cookies yet).
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request) {
   try {
-    // Parse JSON login data.
     const { email, password } = await request.json();
 
-    // Look up user in the database.
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    // Basic validation to avoid unnecessary DB hit
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: "Email and password are required" },
+        { status: 400 }
+      );
+    }
+
+    // Find user by email
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       return NextResponse.json(
@@ -24,7 +26,7 @@ export async function POST(request) {
       );
     }
 
-    // Compare password with hashed password in DB.
+    // Compare password hashes
     const valid = await bcrypt.compare(password, user.password);
 
     if (!valid) {
@@ -34,10 +36,12 @@ export async function POST(request) {
       );
     }
 
-    // If we reach here, login is successful.
-    // For FPV: We return success without implementing sessions yet.
+    // FPV: Return success without auth tokens
     return NextResponse.json(
-      { message: "Login successful", userId: user.id },
+      {
+        message: "Login successful",
+        userId: user.id,
+      },
       { status: 200 }
     );
 

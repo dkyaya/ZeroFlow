@@ -1,6 +1,4 @@
 // app/api/athlete/calculate/route.js
-// FPV athlete calculator: returns higher protein + adjusted calories.
-// This is intentionally simple for the final project.
 
 import { NextResponse } from "next/server";
 
@@ -8,21 +6,26 @@ export async function POST(request) {
   try {
     const { weight, activity } = await request.json();
 
-    // Base calories estimate (FPV version)
-    let calories = weight * 15;
+    if (typeof weight !== "number" || weight <= 0) {
+      return NextResponse.json(
+        { error: "Weight must be a positive number." },
+        { status: 400 }
+      );
+    }
 
-    // Adjust for training intensity
-    if (activity === "light") calories += 200;
-    if (activity === "moderate") calories += 400;
-    if (activity === "intense") calories += 600;
+    const activityBump = {
+      light: 200,
+      moderate: 400,
+      intense: 600,
+    }[activity] ?? 0;
 
-    // Athlete protein recommendation (simplified)
-    const protein = Math.round(weight * 1.2);
+    // FPV simplified athlete calorie estimate
+    const calories = weight * 15 + activityBump;
 
-    return NextResponse.json({
-      calories,
-      protein,
-    });
+    // FPV simplified protein target (grams/day)
+    const protein_g = Math.round(weight * 1.2);
+
+    return NextResponse.json({ calories, protein_g });
   } catch (err) {
     console.error("Athlete calc error:", err);
     return NextResponse.json(
