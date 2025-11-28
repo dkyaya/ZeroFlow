@@ -1,20 +1,13 @@
 // app/dashboard/page.jsx
-// Dashboard page for ZeroFlow (Final Project Version)
-// Displays:
-// - Total calorie target
-// - Calories consumed
-// - Remaining calories
-// - Foods logged today
-// Uses a simple fetch to the summary API (no auth yet).
+// ZeroFlow Dashboard — Clean, modern, responsive dashboard for daily stats.
+
+import Navbar from "../components/Navbar";
 
 async function getSummary() {
-  // Fetch daily summary from the API.
-  // cache: "no-store" ensures fresh data on each load.
-  const res = await fetch("http://localhost:3000/api/summary", {
+  const res = await fetch("http://localhost:3000/api/summary/route", {
     cache: "no-store",
   });
 
-  // If API fails, return safe defaults.
   if (!res.ok) {
     return {
       caloriesTarget: 0,
@@ -27,72 +20,89 @@ async function getSummary() {
 }
 
 export default async function DashboardPage() {
-  // Load summary data
   const summary = await getSummary();
-  const { caloriesTarget, caloriesConsumed, foods } = summary;
 
-  // Remaining calories (never negative)
+  const { caloriesTarget, caloriesConsumed, foods } = summary;
   const remaining = Math.max(caloriesTarget - caloriesConsumed, 0);
 
   return (
-    <main className="min-h-screen bg-gray-50 px-6 py-10">
-      <h1 className="text-3xl font-semibold text-blue-700 mb-8">
-        Your Dashboard
-      </h1>
+    <main className="min-h-screen bg-slate-50">
+      {/* NAV */}
+      <Navbar />
 
-      {/* ----- CALORIE SUMMARY CARD ----- */}
-      <div className="bg-white shadow-md rounded-xl p-6 max-w-xl mb-10">
-        <h2 className="text-xl font-medium mb-4">Today's Summary</h2>
+      {/* PAGE CONTENT */}
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        <h1 className="text-3xl font-semibold text-slate-900 mb-8">
+          Today’s Overview
+        </h1>
 
-        <div className="flex flex-col gap-2 text-gray-700">
-          <p>
-            <span className="font-semibold">Target:</span>{" "}
-            {caloriesTarget} calories
-          </p>
-          <p>
-            <span className="font-semibold">Consumed:</span>{" "}
-            {caloriesConsumed} calories
-          </p>
-          <p>
-            <span
-              className={`font-semibold ${
-                remaining === 0 ? "text-red-600" : "text-green-700"
-              }`}
-            >
-              Remaining:
-            </span>{" "}
-            {remaining} calories
-          </p>
-        </div>
-      </div>
+        {/* GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* STATS CARD */}
+          <section className="bg-white shadow-md rounded-2xl p-8 border border-slate-100">
+            <h2 className="text-xl font-semibold text-slate-900 mb-6">
+              Daily Summary
+            </h2>
 
-      {/* ----- TODAY'S FOOD LOG SECTION ----- */}
-      <div className="bg-white shadow-md rounded-xl p-6 max-w-xl">
-        <h2 className="text-xl font-medium mb-4">Foods Logged Today</h2>
+            <div className="space-y-4 text-slate-700">
+              <p>
+                <span className="font-medium">Calorie Target:</span>{" "}
+                {caloriesTarget} kcal
+              </p>
 
-        {foods.length === 0 ? (
-          <p className="text-gray-600 text-sm">No foods logged yet.</p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {foods.map((item, idx) => (
-              <li
-                key={idx}
-                className="flex justify-between border-b pb-2 text-gray-700"
+              <p>
+                <span className="font-medium">Consumed:</span>{" "}
+                {caloriesConsumed} kcal
+              </p>
+
+              <p>
+                <span
+                  className={`font-medium ${
+                    remaining === 0 ? "text-red-600" : "text-green-700"
+                  }`}
+                >
+                  Remaining:
+                </span>{" "}
+                {remaining} kcal
+              </p>
+            </div>
+          </section>
+
+          {/* FOOD LOG */}
+          <section className="bg-white shadow-md rounded-2xl p-8 border border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-slate-900">
+                Foods Logged Today
+              </h2>
+              <a
+                href="/food/log"
+                className="px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition shadow-sm"
               >
-                <span>{item.name}</span>
-                <span>{item.calories} cal</span>
-              </li>
-            ))}
-          </ul>
-        )}
+                + Add Food
+              </a>
+            </div>
 
-        {/* TODO: Add /food/log/page.jsx to make this real */}
-        <a
-          href="/food/log"
-          className="mt-6 inline-block text-blue-600 hover:underline"
-        >
-          Log a Food →
-        </a>
+            {foods.length === 0 ? (
+              <p className="text-slate-500 text-sm">
+                Nothing logged yet. Start tracking your meals.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {foods.map((f, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-center justify-between border-b pb-3 text-slate-700"
+                  >
+                    <span className="font-medium">{f.name}</span>
+                    <span>{f.calories} kcal</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+        </div>
       </div>
     </main>
   );
