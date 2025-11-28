@@ -1,15 +1,12 @@
-// app/register/page.jsx
-// Registration page for ZeroFlow (Final Project Version)
-// Allows new users to create an account and POSTs data to /api/auth/register.
-
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  // Local state for form fields and errors
-  const [name, setName] = useState("");
+  const [first, setFirst] = useState("");
+  const [last, setLast] = useState("");
+  const [preferred, setPreferred] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -19,111 +16,112 @@ export default function RegisterPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    // Basic password check before sending data
     if (password !== confirm) {
       setErrorMsg("Passwords do not match.");
       return;
     }
 
-    // Correct API path (NO `/route`)
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({
+        firstName: first,
+        lastName: last,
+        preferredName: preferred,
+        email,
+        password,
+      }),
     });
 
     if (res.ok) {
-      router.push("/login"); // redirect after success
+      router.push("/login");
     } else {
-      setErrorMsg("An account with this email may already exist.");
+      setErrorMsg("Unable to register user.");
     }
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
-      {/* Form container */}
-      <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
-        <h1 className="text-2xl font-semibold text-blue-700 mb-6 text-center">
-          Create an Account
-        </h1>
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+      <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full">
 
-        {/* Error message */}
+        <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
+
         {errorMsg && (
-          <div className="mb-4 text-red-600 text-sm text-center">
-            {errorMsg}
-          </div>
+          <p className="text-red-600 text-center mb-4">{errorMsg}</p>
         )}
 
-        {/* Registration form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Name input */}
-          <div className="flex flex-col">
-            <label className="text-gray-700 mb-1">Name (Optional)</label>
+
+          <div>
+            <label className="text-gray-700 mb-1 block">First Name</label>
             <input
-              type="text"
-              placeholder="Your name (optional)"
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              required
+              className="border rounded-lg px-3 py-2 w-full"
+              value={first}
+              onChange={(e) => setFirst(e.target.value)}
             />
           </div>
 
-          {/* Email input */}
-          <div className="flex flex-col">
-            <label className="text-gray-700 mb-1">Email</label>
+          <div>
+            <label className="text-gray-700 mb-1 block">Last Name</label>
+            <input
+              required
+              className="border rounded-lg px-3 py-2 w-full"
+              value={last}
+              onChange={(e) => setLast(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="text-gray-700 mb-1 block">Preferred Name (Optional)</label>
+            <input
+              className="border rounded-lg px-3 py-2 w-full"
+              value={preferred}
+              onChange={(e) => setPreferred(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="text-gray-700 mb-1 block">Email</label>
             <input
               type="email"
               required
-              placeholder="you@example.com"
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="border rounded-lg px-3 py-2 w-full"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
-          {/* Password input */}
-          <div className="flex flex-col">
-            <label className="text-gray-700 mb-1">Password</label>
+          <div>
+            <label className="text-gray-700 mb-1 block">Password</label>
             <input
               type="password"
               required
-              placeholder="••••••••"
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="border rounded-lg px-3 py-2 w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {/* Confirm password input */}
-          <div className="flex flex-col">
-            <label className="text-gray-700 mb-1">Confirm Password</label>
+          <div>
+            <label className="text-gray-700 mb-1 block">Confirm Password</label>
             <input
               type="password"
               required
-              placeholder="••••••••"
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="border rounded-lg px-3 py-2 w-full"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
             />
           </div>
 
-          {/* Submit button */}
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition"
+            className="mt-2 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition"
           >
             Register
           </button>
         </form>
 
-        {/* Link to login */}
-        <p className="text-center text-gray-600 mt-6 text-sm">
-          Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
-            Log in
-          </a>
-        </p>
       </div>
     </main>
   );

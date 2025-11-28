@@ -7,7 +7,7 @@
 // - extremely TF-safe & fast
 
 import { NextResponse } from "next/server";
-import foods from "@/data/foods.json";
+import foods from "@/data/food.json";
 
 // Basic fuzzy match helper (lightweight, no external libs)
 function fuzzyMatch(query, target) {
