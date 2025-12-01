@@ -23,6 +23,15 @@ export async function GET() {
 
     const { start, end } = getTodayRange();
 
+    // Fetch the user info (placeholder userId = 1 for FPV)
+    const user = await prisma.user.findUnique({
+      where: { id: USER_ID },
+      select: {
+        firstName: true,
+        preferredName: true,
+      },
+    });
+
     // Fetch all food logs from today
     const logs = await prisma.foodLog.findMany({
       where: {
@@ -45,6 +54,7 @@ export async function GET() {
 
     return NextResponse.json(
       {
+        user,
         caloriesTarget,
         caloriesConsumed,
         foods: logs.map((item) => ({

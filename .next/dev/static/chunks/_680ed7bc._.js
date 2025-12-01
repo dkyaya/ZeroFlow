@@ -2,6 +2,8 @@
 "[project]/app/register/page.jsx [app-client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+// app/register/page.jsx
+// ZeroFlow Registration Page (Production-styled, Sectioned Layout)
 __turbopack_context__.s([
     "default",
     ()=>RegisterPage
@@ -16,250 +18,688 @@ var _s = __turbopack_context__.k.signature();
 ;
 function RegisterPage() {
     _s();
-    const [first, setFirst] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
-    const [last, setLast] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
-    const [preferred, setPreferred] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    // Form fields
+    const [firstName, setFirstName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [lastName, setLastName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [preferredName, setPreferredName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [email, setEmail] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [password, setPassword] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [confirm, setConfirm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [height, setHeight] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [weight, setWeight] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [age, setAge] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [sex, setSex] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("male");
+    const [goal, setGoal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("maintain");
+    const [activity, setActivity] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("light");
+    const [unitSystem, setUnitSystem] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("imperial");
     const [errorMsg, setErrorMsg] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
-    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     async function handleSubmit(e) {
         e.preventDefault();
+        // Password check
         if (password !== confirm) {
             setErrorMsg("Passwords do not match.");
             return;
         }
+        // Send to API
         const res = await fetch("/api/auth/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                firstName: first,
-                lastName: last,
-                preferredName: preferred,
+                firstName,
+                lastName,
+                preferredName,
                 email,
-                password
+                password,
+                height,
+                weight,
+                age,
+                sex,
+                goal,
+                activityLevel: activity,
+                unitSystem
             })
         });
         if (res.ok) {
             router.push("/login");
         } else {
-            setErrorMsg("Unable to register user.");
+            setErrorMsg("Registration failed. Email may already be in use.");
         }
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
-        className: "min-h-screen flex items-center justify-center bg-slate-50 px-4",
+        className: "min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "bg-white shadow-xl rounded-xl p-8 max-w-md w-full",
+            className: "bg-white w-full max-w-2xl shadow-lg rounded-2xl p-10 border border-slate-200",
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                    className: "text-2xl font-bold mb-6 text-center",
-                    children: "Create Account"
+                    className: "text-3xl font-bold text-slate-900 mb-6 text-center",
+                    children: "Create Your ZeroFlow Account"
                 }, void 0, false, {
                     fileName: "[project]/app/register/page.jsx",
-                    lineNumber: 47,
+                    lineNumber: 72,
                     columnNumber: 9
                 }, this),
                 errorMsg && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                    className: "text-red-600 text-center mb-4",
+                    className: "text-red-600 mb-4 text-center font-medium",
                     children: errorMsg
                 }, void 0, false, {
                     fileName: "[project]/app/register/page.jsx",
-                    lineNumber: 50,
+                    lineNumber: 77,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                     onSubmit: handleSubmit,
-                    className: "flex flex-col gap-4",
+                    className: "flex flex-col gap-10",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "text-gray-700 mb-1 block",
-                                    children: "First Name"
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                    className: "text-xl font-semibold text-slate-800 mb-4",
+                                    children: "Personal Information"
                                 }, void 0, false, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 56,
+                                    lineNumber: 88,
                                     columnNumber: 13
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                    required: true,
-                                    className: "border rounded-lg px-3 py-2 w-full",
-                                    value: first,
-                                    onChange: (e)=>setFirst(e.target.value)
-                                }, void 0, false, {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "First Name"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 94,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "text",
+                                                    required: true,
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: firstName,
+                                                    onChange: (e)=>setFirstName(e.target.value)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 95,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 93,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Last Name"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 105,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "text",
+                                                    required: true,
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: lastName,
+                                                    onChange: (e)=>setLastName(e.target.value)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 106,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 104,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 57,
+                                    lineNumber: 92,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "mt-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                            className: "text-slate-700 mb-1 block",
+                                            children: "Preferred Name (Optional)"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 117,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "text",
+                                            className: "border rounded-lg px-3 py-2 w-full",
+                                            value: preferredName,
+                                            onChange: (e)=>setPreferredName(e.target.value)
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 118,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/register/page.jsx",
+                                    lineNumber: 116,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "mt-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                            className: "text-slate-700 mb-1 block",
+                                            children: "Email"
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 127,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "email",
+                                            required: true,
+                                            className: "border rounded-lg px-3 py-2 w-full",
+                                            value: email,
+                                            onChange: (e)=>setEmail(e.target.value)
+                                        }, void 0, false, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 128,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/register/page.jsx",
+                                    lineNumber: 126,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/register/page.jsx",
-                            lineNumber: 55,
+                            lineNumber: 87,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "text-gray-700 mb-1 block",
-                                    children: "Last Name"
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                    className: "text-xl font-semibold text-slate-800 mb-4",
+                                    children: "Body Metrics"
                                 }, void 0, false, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 66,
+                                    lineNumber: 143,
                                     columnNumber: 13
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                    required: true,
-                                    className: "border rounded-lg px-3 py-2 w-full",
-                                    value: last,
-                                    onChange: (e)=>setLast(e.target.value)
-                                }, void 0, false, {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Height"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 149,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "number",
+                                                    required: true,
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: height,
+                                                    onChange: (e)=>setHeight(e.target.value),
+                                                    placeholder: unitSystem === "imperial" ? "inches" : "cm"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 150,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 148,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Weight"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 161,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "number",
+                                                    required: true,
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: weight,
+                                                    onChange: (e)=>setWeight(e.target.value),
+                                                    placeholder: unitSystem === "imperial" ? "lbs" : "kg"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 162,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 160,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Age"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 173,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "number",
+                                                    required: true,
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: age,
+                                                    onChange: (e)=>setAge(e.target.value)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 174,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 172,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 67,
+                                    lineNumber: 147,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "mt-4 grid grid-cols-1 md:grid-cols-2 gap-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Sex"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 186,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: sex,
+                                                    onChange: (e)=>setSex(e.target.value),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "male",
+                                                            children: "Male"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 192,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "female",
+                                                            children: "Female"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 193,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 187,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 185,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Units"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 198,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: unitSystem,
+                                                    onChange: (e)=>setUnitSystem(e.target.value),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "imperial",
+                                                            children: "Imperial (lbs/in)"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 204,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "metric",
+                                                            children: "Metric (kg/cm)"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 205,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 199,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 197,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/app/register/page.jsx",
+                                    lineNumber: 184,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/register/page.jsx",
-                            lineNumber: 65,
+                            lineNumber: 142,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "text-gray-700 mb-1 block",
-                                    children: "Preferred Name (Optional)"
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                    className: "text-xl font-semibold text-slate-800 mb-4",
+                                    children: "Goals & Lifestyle"
                                 }, void 0, false, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 76,
+                                    lineNumber: 216,
                                     columnNumber: 13
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                    className: "border rounded-lg px-3 py-2 w-full",
-                                    value: preferred,
-                                    onChange: (e)=>setPreferred(e.target.value)
-                                }, void 0, false, {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Goal"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 223,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: goal,
+                                                    onChange: (e)=>setGoal(e.target.value),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "lose",
+                                                            children: "Lose Weight"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 229,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "maintain",
+                                                            children: "Maintain"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 230,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "gain",
+                                                            children: "Gain Muscle"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 231,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "performance",
+                                                            children: "Performance"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 232,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 224,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 222,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Activity Level"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 237,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: activity,
+                                                    onChange: (e)=>setActivity(e.target.value),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "sedentary",
+                                                            children: "Sedentary"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 243,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "light",
+                                                            children: "Light"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 244,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "moderate",
+                                                            children: "Moderate"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 245,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "high",
+                                                            children: "High"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/register/page.jsx",
+                                                            lineNumber: 246,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 238,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 236,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 77,
+                                    lineNumber: 220,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/register/page.jsx",
-                            lineNumber: 75,
+                            lineNumber: 215,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "text-gray-700 mb-1 block",
-                                    children: "Email"
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                    className: "text-xl font-semibold text-slate-800 mb-4",
+                                    children: "Secure Your Account"
                                 }, void 0, false, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 85,
+                                    lineNumber: 258,
                                     columnNumber: 13
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                    type: "email",
-                                    required: true,
-                                    className: "border rounded-lg px-3 py-2 w-full",
-                                    value: email,
-                                    onChange: (e)=>setEmail(e.target.value)
-                                }, void 0, false, {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Password"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 264,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "password",
+                                                    required: true,
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: password,
+                                                    onChange: (e)=>setPassword(e.target.value)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 265,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 263,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-slate-700 mb-1 block",
+                                                    children: "Confirm Password"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 275,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "password",
+                                                    required: true,
+                                                    className: "border rounded-lg px-3 py-2 w-full",
+                                                    value: confirm,
+                                                    onChange: (e)=>setConfirm(e.target.value)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/register/page.jsx",
+                                                    lineNumber: 276,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/register/page.jsx",
+                                            lineNumber: 274,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 86,
+                                    lineNumber: 262,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/register/page.jsx",
-                            lineNumber: 84,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "text-gray-700 mb-1 block",
-                                    children: "Password"
-                                }, void 0, false, {
-                                    fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 96,
-                                    columnNumber: 13
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                    type: "password",
-                                    required: true,
-                                    className: "border rounded-lg px-3 py-2 w-full",
-                                    value: password,
-                                    onChange: (e)=>setPassword(e.target.value)
-                                }, void 0, false, {
-                                    fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 97,
-                                    columnNumber: 13
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/app/register/page.jsx",
-                            lineNumber: 95,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "text-gray-700 mb-1 block",
-                                    children: "Confirm Password"
-                                }, void 0, false, {
-                                    fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 107,
-                                    columnNumber: 13
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                    type: "password",
-                                    required: true,
-                                    className: "border rounded-lg px-3 py-2 w-full",
-                                    value: confirm,
-                                    onChange: (e)=>setConfirm(e.target.value)
-                                }, void 0, false, {
-                                    fileName: "[project]/app/register/page.jsx",
-                                    lineNumber: 108,
-                                    columnNumber: 13
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/app/register/page.jsx",
-                            lineNumber: 106,
+                            lineNumber: 257,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                             type: "submit",
-                            className: "mt-2 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition",
-                            children: "Register"
+                            className: "w-full py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-medium transition shadow-sm",
+                            children: "Create Account"
                         }, void 0, false, {
                             fileName: "[project]/app/register/page.jsx",
-                            lineNumber: 117,
+                            lineNumber: 288,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/register/page.jsx",
-                    lineNumber: 53,
+                    lineNumber: 82,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                    className: "text-center text-slate-600 mt-6 text-sm",
+                    children: [
+                        "Already have an account?",
+                        " ",
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                            href: "/login",
+                            className: "text-blue-700 hover:underline",
+                            children: "Log in"
+                        }, void 0, false, {
+                            fileName: "[project]/app/register/page.jsx",
+                            lineNumber: 299,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/register/page.jsx",
+                    lineNumber: 297,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/register/page.jsx",
-            lineNumber: 45,
+            lineNumber: 70,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/register/page.jsx",
-        lineNumber: 44,
+        lineNumber: 69,
         columnNumber: 5
     }, this);
 }
-_s(RegisterPage, "h8UfV5m1qQWyCrNX6Ymf+eXEU0s=", false, function() {
+_s(RegisterPage, "x2LVZSyull8tZalrrh5k/VjWWuA=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];

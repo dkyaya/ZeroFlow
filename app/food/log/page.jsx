@@ -1,20 +1,45 @@
-// app/food/log/page.jsx
-// Food logging page for ZeroFlow (Final Project Version)
-// Allows users to enter a food name + calorie amount
-// Submits to the /api/food/log API route using POST.
-
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Logo from "../../components/logo";
+
+import BarcodeScanner from "../../components/BarcodeScanner";
+import FoodAutocomplete from "../../components/FoodAutocomplete";
+import { findFoodByBarcode } from "@/lib/findFoodByBarcode";
 
 export default function LogFoodPage() {
-  const [name, setName] = useState("");
-  const [calories, setCalories] = useState("");
-  const [error, setError] = useState("");
-
   const router = useRouter();
 
+  const [showScanner, setShowScanner] = useState(false);
+  const [foodName, setFoodName] = useState("");
+  const [calories, setCalories] = useState("");
+  const [category, setCategory] = useState("");
+
+  // When user selects from autocomplete
+  function handleSelect(item) {
+    setFoodName(item.name);
+    setCalories(item.calories);
+    setCategory(item.category || "");
+  }
+
+  // When barcode scan succeeds
+  function handleBarcodeDetected(code) {
+    const match = findFoodByBarcode(code);
+
+    if (match) {
+      setFoodName(match.name);
+      setCalories(match.calories);
+      setCategory(match.category || "");
+    } else {
+      alert(`Unknown barcode: ${code}`);
+    }
+
+    setShowScanner(false);
+  }
+
+  // SUBMIT → Add food → Redirect to dashboard
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -22,63 +47,108 @@ export default function LogFoodPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name,
+        name: foodName,
         calories: Number(calories),
+        category,
       }),
     });
 
     if (res.ok) {
       router.push("/dashboard");
     } else {
-      setError("Failed to log food.");
+      alert("Could not log food. Please try again.");
     }
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white shadow-md rounded-xl p-8 max-w-md w-full">
-        <h1 className="text-2xl font-semibold text-blue-700 mb-6 text-center">
-          Log Food
-        </h1>
+    <main className="min-h-screen bg-slate-50 text-slate-900">
 
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+      {/* -------------------------------------------------- */}
+      {/* NAVBAR (same layout as dashboard) */}
+      {/* -------------------------------------------------- */}
+      <nav className="w-full flex items-center justify-between px-8 py-4 bg-white shadow-sm">
+        <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+          <Logo className="h-8 w-8" />
+        </Link>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Food name input */}
-          <div>
-            <label className="text-gray-700 mb-1 block">Food Name</label>
-            <input
-              type="text"
-              required
-              className="border rounded-lg px-3 py-2 w-full"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Chicken Breast"
-            />
-          </div>
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/dashboard" className="hover:text-blue-700">Dashboard</Link>
+          <Link href="/food/log" className="hover:text-blue-700 font-medium text-blue-700">
+            Log Food
+          </Link>
+          <Link href="/workout/log" className="hover:text-blue-700">Log Workout</Link>
+        </div>
+      </nav>
 
-          {/* Calorie input */}
-          <div>
-            <label className="text-gray-700 mb-1 block">Calories</label>
-            <input
-              type="number"
-              required
-              className="border rounded-lg px-3 py-2 w-full"
-              value={calories}
-              onChange={(e) => setCalories(e.target.value)}
-              placeholder="e.g., 200"
-            />
-          </div>
+      {/* SCANNER OVERLAY */}
+      {showScanner && (
+        <BarcodeScanner
+          onDetected={handleBarcodeDetected}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
 
-          {/* Submit button */}
+      {/* -------------------------------------------------- */}
+      {/* PAGE CONTENT */}
+      {/* -------------------------------------------------- */}
+      <section className="max-w-xl mx-auto px-6 mt-10">
+        <h1 className="text-3xl font-semibold text-center">Log Food</h1>
+        <p className="text-slate-500 text-center mt-1">
+          Add meals quickly with search or barcode scan.
+        </p>
+
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white border rounded-xl shadow-xl p-6 mt-8 flex flex-col gap-4"
+        >
+          {/* AUTOCOMPLETE */}
+          <FoodAutocomplete onSelect={handleSelect} />
+
+          {/* Food name */}
+          <input
+            value={foodName}
+            onChange={e => setFoodName(e.target.value)}
+            placeholder="Food name"
+            className="border px-4 py-2 rounded-lg"
+            required
+          />
+
+          {/* Calories */}
+          <input
+            value={calories}
+            type="number"
+            onChange={e => setCalories(e.target.value)}
+            placeholder="Calories"
+            className="border px-4 py-2 rounded-lg"
+            required
+          />
+
+          {/* Category */}
+          <input
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+            placeholder="Category (optional)"
+            className="border px-4 py-2 rounded-lg"
+          />
+
+          {/* Barcode Scan Button */}
+          <button
+            type="button"
+            onClick={() => setShowScanner(true)}
+            className="py-2 px-4 rounded-lg border border-blue-700 text-blue-700 hover:bg-blue-50 transition"
+          >
+            Scan Barcode
+          </button>
+
+          {/* Submit */}
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
+            className="py-3 bg-blue-700 text-white font-medium rounded-lg hover:bg-blue-800 transition shadow-md"
           >
-            Add Entry
+            Log Food
           </button>
         </form>
-      </div>
+      </section>
     </main>
   );
 }
