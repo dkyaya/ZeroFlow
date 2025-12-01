@@ -18,19 +18,22 @@ function getTodayRange() {
 
 export async function GET() {
   try {
-    // FPV placeholder user
-    const USER_ID = 1;
-
-    const { start, end } = getTodayRange();
-
-    // Fetch the user info (placeholder userId = 1 for FPV)
-    const user = await prisma.user.findUnique({
-      where: { id: USER_ID },
+    // FPV: use most recently created user as the active user (no auth yet)
+    const activeUser = await prisma.user.findFirst({
+      orderBy: { id: "desc" },
       select: {
+        id: true,
         firstName: true,
         preferredName: true,
       },
     });
+
+    const USER_ID = activeUser?.id ?? 1;
+
+    const { start, end } = getTodayRange();
+
+    // Use the active user info
+    const user = activeUser;
 
     // Fetch all food logs from today
     const logs = await prisma.foodLog.findMany({

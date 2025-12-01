@@ -128,15 +128,95 @@ export default async function DashboardPage() {
       {/* GRID CARDS */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 px-8 mt-12">
 
-        {/* DAILY CALORIES CARD */}
-        <div className="bg-white shadow-lg rounded-xl p-6 border border-slate-100">
-          <h2 className="text-xl font-semibold mb-3">Daily Calories</h2>
-          <p><span className="font-medium">Target:</span> {caloriesTarget} cal</p>
-          <p><span className="font-medium">Consumed:</span> {caloriesConsumed} cal</p>
-          <p className={`font-medium mt-2 ${remaining === 0 ? "text-red-600" : "text-green-700"}`}>
-            Remaining: {remaining} cal
-          </p>
-        </div>
+{/* CALORIES CARD */}
+<div className="bg-white shadow-lg rounded-xl p-6 border border-slate-100 flex flex-col gap-6">
+
+  {/* ---------- TOP: Progress Ring + numbers ---------- */}
+  <div className="flex items-center gap-6">
+
+    {/* Progress Ring */}
+    <div className="relative h-24 w-24">
+      <svg className="h-full w-full transform -rotate-90">
+        <circle
+          cx="48" cy="48" r="42"
+          stroke="#E2E8F0"            // slate-200
+          strokeWidth="10"
+          fill="none"
+        />
+        <circle
+          cx="48" cy="48" r="42"
+          stroke="#1E40AF"            // blue-800
+          strokeWidth="10"
+          fill="none"
+          strokeDasharray={2 * Math.PI * 42}
+          strokeDashoffset={
+            (1 - caloriesConsumed / caloriesTarget) * 2 * Math.PI * 42
+          }
+          strokeLinecap="round"
+          className="transition-all duration-700 ease-out"
+        />
+      </svg>
+
+      {/* Center text */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-lg font-semibold text-slate-800">
+          {Math.round((caloriesConsumed / caloriesTarget) * 100)}%
+        </span>
+      </div>
+    </div>
+
+    {/* Numbers */}
+    <div>
+      <h2 className="text-xl font-semibold mb-3">Daily Calories</h2>
+      <p><span className="font-medium">Target:</span> {caloriesTarget} cal</p>
+      <p><span className="font-medium">Consumed:</span> {caloriesConsumed} cal</p>
+      <p
+        className={`font-medium mt-2 ${
+          remaining === 0 ? "text-red-600" : "text-green-700"
+        }`}
+      >
+        Remaining: {remaining} cal
+      </p>
+    </div>
+  </div>
+
+  {/* ---------- MACRO BAR ---------- */}
+  <div className="mt-1">
+    <p className="font-medium text-slate-700 mb-2">Macros</p>
+
+    {/* (Temporary placeholder — later replace with real macro totals) */}
+    <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+      <span>Protein</span>
+      <span>·</span>
+      <span>Carbs</span>
+      <span>·</span>
+      <span>Fat</span>
+    </div>
+
+    <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden flex">
+
+      {/* Protein — 30% */}
+      <div
+        className="bg-blue-700 h-full"
+        style={{ width: "30%" }}
+      />
+
+      {/* Carbs — 50% */}
+      <div
+        className="bg-blue-400 h-full"
+        style={{ width: "50%" }}
+      />
+
+      {/* Fat — 20% */}
+      <div
+        className="bg-blue-900 h-full"
+        style={{ width: "20%" }}
+      />
+    </div>
+  </div>
+
+</div>
+
 
         {/* FOODS CARD — UPDATED */}
         <div className="bg-white shadow-lg rounded-xl p-6 border border-slate-100">
