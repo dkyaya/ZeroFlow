@@ -1,16 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-    "./pages/**/*.{js,jsx,ts,tsx}",
-  ],
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
-      },
-    },
-  },
-  plugins: [],
-};
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
+// Bridge to the existing CJS Tailwind config.
+export default require("./tailwind.config.cjs");

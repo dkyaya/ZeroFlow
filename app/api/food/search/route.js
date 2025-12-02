@@ -1,92 +1,96 @@
 // app/api/food/search/route.js
-// Enhanced ZeroFlow food search:
-// - fuzzy search (typo-tolerant)
-// - scoring for better ranking
-// - optional category filtering (future ready)
-// - pagination
-// - extremely TF-safe & fast
+// USDA API-backed search with macros/portions from USDA response.
 
 import { NextResponse } from "next/server";
-import foods from "@/data/food.json";
 
-// Basic fuzzy match helper (lightweight, no external libs)
-function fuzzyMatch(query, target) {
-  query = query.toLowerCase();
-  target = target.toLowerCase();
+const USDA_API_KEY = process.env.USDA_API_KEY;
+const USDA_SEARCH_URL = "https://api.nal.usda.gov/fdc/v1/foods/search";
 
-  let qi = 0;
-  for (let ti = 0; ti < target.length && qi < query.length; ti++) {
-    if (target[ti] === query[qi]) {
-      qi++;
-    }
+// USDA nutrient IDs
+const NUTRIENTS = {
+  calories: 1008,
+  protein: 1003,
+  carbs: 1005,
+  fat: 1004,
+};
+
+function extractMacros(foodNutrients = []) {
+  const macros = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+
+  for (const n of foodNutrients) {
+    const id =
+      n.nutrientId ??
+      n.nutrient?.id ??
+      Number(n.nutrientNumber ?? n.number ?? n.nutrient?.number);
+    const name = (n.nutrient?.name || n.nutrientName || "").toLowerCase();
+    const amount = n.amount ?? n.value ?? 0;
+
+    if (id === NUTRIENTS.calories || name.includes("energy")) macros.calories = amount;
+    if (id === NUTRIENTS.protein || name === "protein") macros.protein = amount;
+    if (id === NUTRIENTS.carbs || name.includes("carbohydrate")) macros.carbs = amount;
+    if (id === NUTRIENTS.fat || name === "fat") macros.fat = amount;
   }
-  return qi === query.length;
-}
 
-// Scoring function
-// Higher = better match
-function scoreMatch(query, name) {
-  name = name.toLowerCase();
-  query = query.toLowerCase();
-
-  if (name === query) return 100;            // perfect match
-  if (name.startsWith(query)) return 75;     // strong match
-  if (name.includes(query)) return 50;       // decent match
-  if (fuzzyMatch(query, name)) return 25;    // typo match
-  return 0;
+  return macros;
 }
 
 export async function GET(request) {
   try {
+    if (!USDA_API_KEY) {
+      return NextResponse.json(
+        { error: "USDA API key missing. Set USDA_API_KEY in .env." },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
-
-    const query = searchParams.get("q")?.trim().toLowerCase() || "";
+    const query = searchParams.get("q")?.trim();
     const page = Number(searchParams.get("page")) || 1;
-    const limit = Number(searchParams.get("limit")) || 30;
+    const limit = Math.min(50, Number(searchParams.get("limit")) || 25);
 
-    // Future-ready category filter
-    const category = searchParams.get("category");
-
-    // If blank search, return empty list (fast)
     if (!query) {
-      return NextResponse.json({
-        results: [],
-        page,
-        total: 0,
-      });
+      return NextResponse.json({ results: [], page, total: 0 });
     }
 
-    // Filter foods
-    let filtered = foods
-      .map((item) => ({
-        ...item,
-        score: scoreMatch(query, item.name),
-      }))
-      .filter((item) => item.score > 0);
-
-    // Optional category filter (if you add categories later)
-    if (category) {
-      filtered = filtered.filter((item) => item.category === category);
-    }
-
-    // Sort by score DESC
-    filtered.sort((a, b) => b.score - a.score);
-
-    // Pagination
-    const start = (page - 1) * limit;
-    const paginated = filtered.slice(start, start + limit);
-
-    return NextResponse.json({
-      results: paginated,
-      page,
-      total: filtered.length,
+    const url = new URL(USDA_SEARCH_URL);
+    url.searchParams.set("api_key", USDA_API_KEY);
+    url.searchParams.set("query", query);
+    url.searchParams.set("pageSize", String(limit));
+    url.searchParams.set("pageNumber", String(page));
+    // request specific nutrients so macros are included
+    Object.values(NUTRIENTS).forEach((id) => {
+      url.searchParams.append("nutrients", String(id));
     });
 
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) {
+      const errTxt = await res.text().catch(() => "");
+      throw new Error(`USDA API error (${res.status}): ${errTxt}`);
+    }
+    const data = await res.json();
+    const foods = data.foods || [];
+
+    const results = foods.map((food) => ({
+      fdcId: food.fdcId,
+      name: food.description,
+      brandName: food.brandOwner || food.brandName || null,
+      dataType: food.dataType,
+      macros: extractMacros(food.foodNutrients),
+      portions: food.foodPortions?.slice(0, 3)?.map((p) => ({
+        amount: p.amount,
+        measureUnit: p.measureUnit?.abbreviation || p.measureUnit?.name,
+        portionDescription: p.modifier || p.portionDescription,
+        gramWeight: p.gramWeight,
+      })) || [],
+    }));
+
+    return NextResponse.json({
+      results,
+      page,
+      total: data.totalHits ?? results.length,
+    });
   } catch (err) {
-    console.error("Enhanced food search error:", err);
-    return NextResponse.json(
-      { error: "Failed to search foods" },
-      { status: 500 }
-    );
+    console.error("Food search error:", err);
+    return NextResponse.json({ error: "Failed to search foods" }, { status: 500 });
   }
 }

@@ -7,35 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id             Int      @id @default(autoincrement())
   firstName      String
   lastName       String
-  preferredName  String? 
+  preferredName  String?
   email          String   @unique
   password       String
-  height         Int      // stored as cm if metric, inches if imperial
-  weight         Int      // stored as lbs or kg
+  height         Int
+  weight         Int
   age            Int
-  sex            String   // "male" | "female"
-  goal           String   // "lose" | "maintain" | "gain" | "performance"
-  activityLevel  String   // "sedentary" | "light" | "moderate" | "high"
-  unitSystem     String   // "imperial" | "metric"
+  sex            String
+  goal           String
+  activityLevel  String
+  unitSystem     String
 
-  foodLogs       FoodLog[]
+  foodLogs       DailyFoodLog[]
   createdAt      DateTime @default(now())
 }
 
-
-
-
-model FoodLog {
+model DailyFoodLog {
   id        Int      @id @default(autoincrement())
   userId    Int
+  foodId    Int?     // optional reference to USDA fdcId; no relation enforced
   name      String
   calories  Int
-  createdAt DateTime @default(now())
+  protein   Int
+  carbs     Int
+  fat       Int
+  quantity  Float     @default(1)
+  date      DateTime
 
-  User      User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }

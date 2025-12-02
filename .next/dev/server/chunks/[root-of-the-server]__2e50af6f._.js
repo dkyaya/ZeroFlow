@@ -72,8 +72,7 @@ else {
 "use strict";
 
 // app/api/food/log/route.js
-// Adds a new food log entry for the current day.
-// FPV uses a placeholder userId: 1 because full auth is not implemented.
+// Logs a food entry using the USDA search results (calories + macros + quantity).
 __turbopack_context__.s([
     "POST",
     ()=>POST
@@ -84,33 +83,80 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app
 ;
 async function POST(request) {
     try {
-        const { name, calories } = await request.json();
-        // Basic validation for FPV
-        if (!name || !calories) {
+        const body = await request.json();
+        const { fdcId = null, name, calories, protein = 0, carbs = 0, fat = 0, quantity = 1 } = body || {};
+        if (!name || calories === undefined) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "Food name and calories are required"
             }, {
                 status: 400
             });
         }
-        const cal = Number(calories);
-        if (isNaN(cal) || cal <= 0) {
+        const qty = parseInt(quantity, 10);
+        if (!Number.isInteger(qty) || qty <= 0) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: "Quantity must be a positive integer"
+            }, {
+                status: 400
+            });
+        }
+        const calPerUnit = Number(calories);
+        if (isNaN(calPerUnit) || calPerUnit <= 0) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "Calories must be a positive number"
             }, {
                 status: 400
             });
         }
-        // Placeholder user (FPV simplification)
-        const USER_ID = 1;
-        const log = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].foodLog.create({
-            data: {
-                name,
-                calories: cal,
-                userId: USER_ID
+        const macroProtein = Math.round(Number(protein) || 0);
+        const macroCarbs = Math.round(Number(carbs) || 0);
+        const macroFat = Math.round(Number(fat) || 0);
+        // Resolve the active user (most recent) or create a placeholder
+        let activeUser = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].user.findFirst({
+            orderBy: {
+                id: "desc"
+            },
+            select: {
+                id: true
             }
         });
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(log, {
+        if (!activeUser) {
+            activeUser = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].user.create({
+                data: {
+                    firstName: "User",
+                    lastName: "Placeholder",
+                    email: `placeholder-${Date.now()}@example.com`,
+                    password: "placeholder",
+                    height: 0,
+                    weight: 0,
+                    age: 0,
+                    sex: "unknown",
+                    goal: "maintain",
+                    activityLevel: "light",
+                    unitSystem: "metric"
+                },
+                select: {
+                    id: true
+                }
+            });
+        }
+        const entry = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].dailyFoodLog.create({
+            data: {
+                userId: activeUser.id,
+                foodId: fdcId ? Number(fdcId) : null,
+                name: name.trim(),
+                calories: Math.round(calPerUnit),
+                protein: macroProtein,
+                carbs: macroCarbs,
+                fat: macroFat,
+                quantity: qty,
+                date: new Date()
+            }
+        });
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            success: true,
+            entry
+        }, {
             status: 201
         });
     } catch (err) {

@@ -2,6 +2,7 @@
   "name": "zeroflow",
   "version": "1.0.0",
   "description": "ZeroFlow is a web-based calorie and nutrition tracking application built with Next.js 14, React, Prisma, and SQLite.",
+  "type": "module",
   "main": "next.config.js",
   "scripts": {
     "dev": "next dev",

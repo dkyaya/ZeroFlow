@@ -11,20 +11,21 @@ import { headers } from "next/headers";
 // FETCH SUMMARY
 // ---------------------------------------------------------
 async function getSummary() {
-  const res = await fetch("http://localhost:3000/api/summary", {
-    cache: "no-store",
-  });
+  const headerStore = await headers();
+  const host =
+    headerStore.get("x-forwarded-host") ||
+    headerStore.get("host") ||
+    "localhost:3000";
+  const protocol =
+    headerStore.get("x-forwarded-proto") ||
+    (host.includes("localhost") ? "http" : "https");
+  const baseUrl = `${protocol}://${host}`;
 
+  const res = await fetch(`${baseUrl}/api/summary`, { cache: "no-store" });
   if (!res.ok) {
-    return {
-      user: { firstName: "User", preferredName: null },
-      caloriesTarget: 0,
-      caloriesConsumed: 0,
-      foods: [],
-      workouts: [],
-    };
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Summary fetch failed: ${res.status}`);
   }
-
   return res.json();
 }
 
@@ -32,11 +33,28 @@ async function getSummary() {
 // DASHBOARD
 // ---------------------------------------------------------
 export default async function DashboardPage() {
-  const summary = await getSummary();
+  let summary;
+  try {
+    summary = await getSummary();
+  } catch (e) {
+    return (
+      <main className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center">
+        <div className="bg-white shadow rounded-xl p-6 border border-slate-200 max-w-md text-center">
+          <p className="font-semibold text-slate-900 mb-2">Unable to load dashboard</p>
+          <p className="text-slate-600 text-sm">{e.message}</p>
+          <Link href="/login" className="mt-4 inline-block text-blue-700 hover:underline">
+            Return to login
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const {
     user,
-    caloriesTarget,
-    caloriesConsumed,
+    caloriesTarget = 0,
+    caloriesConsumed = 0,
+    macros = { protein: 0, carbs: 0, fat: 0 },
     foods = [],
     workouts = [],
   } = summary;
@@ -51,6 +69,7 @@ export default async function DashboardPage() {
   const navItems = [
     { name: "Dashboard", href: "/dashboard" },
     { name: "Log Food", href: "/food/log" },
+    { name: "Manage Foods", href: "/food/manage" },
     { name: "Log Workout", href: "/workout/log" },
     { name: "Summary", href: "/summary" },
     { name: "Settings", href: "/settings" },
@@ -58,11 +77,8 @@ export default async function DashboardPage() {
 
   const filteredNav = navItems.filter((item) => item.href !== currentPath);
 
-  // NAME LOGIC
-  const name =
-    user?.preferredName?.trim() ||
-    user?.firstName?.trim() ||
-    "User";
+  // NAME LOGIC (no placeholder; empty if not available)
+  const name = user?.preferredName?.trim() || user?.firstName?.trim() || "";
 
   // DATE
   const today = new Date().toLocaleDateString("en-US", {
@@ -107,6 +123,21 @@ export default async function DashboardPage() {
   const dailyMessage = messages[idx];
 
   const remaining = Math.max(caloriesTarget - caloriesConsumed, 0);
+  const ringCirc = 2 * Math.PI * 42;
+  const progressRatio =
+    caloriesTarget > 0 ? Math.min(caloriesConsumed / caloriesTarget, 2) : 0;
+  const macroTotal = Math.max(macros.protein + macros.carbs + macros.fat, 1);
+  const proteinPct = (macros.protein / macroTotal) * 100;
+  const carbsPct = (macros.carbs / macroTotal) * 100;
+  const fatPct = (macros.fat / macroTotal) * 100;
+
+  const overage = caloriesConsumed - caloriesTarget;
+  const statusMessage =
+    overage >= 400
+      ? "You are significantly above your target today."
+      : remaining <= 500 && remaining > 0
+      ? "You're close to your target. Plan your next meal carefully."
+      : "";
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -121,8 +152,13 @@ export default async function DashboardPage() {
 
       {/* GREETING */}
       <section className="mt-10 flex flex-col items-center">
-        <h1 className="text-3xl font-semibold text-slate-900">Hello, {name}.</h1>
+        <h1 className="text-3xl font-semibold text-slate-900">
+          {name ? `Hello, ${name}.` : "Welcome to ZeroFlow."}
+        </h1>
         <p className="text-slate-500 mt-1">{dailyMessage}</p>
+        {statusMessage && (
+          <p className="mt-2 text-sm font-medium text-red-600">{statusMessage}</p>
+        )}
       </section>
 
       {/* GRID CARDS */}
@@ -148,10 +184,8 @@ export default async function DashboardPage() {
           stroke="#1E40AF"            // blue-800
           strokeWidth="10"
           fill="none"
-          strokeDasharray={2 * Math.PI * 42}
-          strokeDashoffset={
-            (1 - caloriesConsumed / caloriesTarget) * 2 * Math.PI * 42
-          }
+          strokeDasharray={ringCirc}
+          strokeDashoffset={(1 - progressRatio) * ringCirc}
           strokeLinecap="round"
           className="transition-all duration-700 ease-out"
         />
@@ -160,7 +194,7 @@ export default async function DashboardPage() {
       {/* Center text */}
       <div className="absolute inset-0 flex items-center justify-center">
         <span className="text-lg font-semibold text-slate-800">
-          {Math.round((caloriesConsumed / caloriesTarget) * 100)}%
+          {caloriesTarget > 0 ? Math.round((caloriesConsumed / caloriesTarget) * 100) : 0}%
         </span>
       </div>
     </div>
@@ -184,34 +218,16 @@ export default async function DashboardPage() {
   <div className="mt-1">
     <p className="font-medium text-slate-700 mb-2">Macros</p>
 
-    {/* (Temporary placeholder — later replace with real macro totals) */}
-    <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
-      <span>Protein</span>
-      <span>·</span>
-      <span>Carbs</span>
-      <span>·</span>
-      <span>Fat</span>
+    <div className="flex items-center gap-3 text-sm text-slate-600 mb-2">
+      <span>Protein: {macros.protein}g</span>
+      <span>Carbs: {macros.carbs}g</span>
+      <span>Fat: {macros.fat}g</span>
     </div>
 
     <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden flex">
-
-      {/* Protein — 30% */}
-      <div
-        className="bg-blue-700 h-full"
-        style={{ width: "30%" }}
-      />
-
-      {/* Carbs — 50% */}
-      <div
-        className="bg-blue-400 h-full"
-        style={{ width: "50%" }}
-      />
-
-      {/* Fat — 20% */}
-      <div
-        className="bg-blue-900 h-full"
-        style={{ width: "20%" }}
-      />
+      <div className="bg-blue-700 h-full" style={{ width: `${proteinPct}%` }} />
+      <div className="bg-blue-400 h-full" style={{ width: `${carbsPct}%` }} />
+      <div className="bg-blue-900 h-full" style={{ width: `${fatPct}%` }} />
     </div>
   </div>
 
@@ -232,8 +248,18 @@ export default async function DashboardPage() {
         key={idx}
         className="flex justify-between border-b pb-2 text-slate-700"
       >
-        <span>{food.name}</span>
-        <span>{food.calories} cal</span>
+        <div className="flex flex-col">
+          <span>{food.name}</span>
+          <span className="text-xs text-slate-500">
+            {food.protein}g P · {food.carbs}g C · {food.fat}g F
+          </span>
+        </div>
+        <div className="text-right">
+          <span>{food.calories} cal</span>
+          {food.quantity ? (
+            <span className="block text-xs text-slate-500">x{food.quantity}</span>
+          ) : null}
+        </div>
       </li>
     ))}
   </ul>

@@ -72,8 +72,7 @@ else {
 "use strict";
 
 // app/api/summary/route.js
-// Provides the daily nutrition summary for the dashboard.
-// FPV uses a placeholder userId (1) because authentication is not implemented yet.
+// Returns a real daily summary (calories + macros + foods) for the most recent user.
 __turbopack_context__.s([
     "GET",
     ()=>GET
@@ -82,7 +81,6 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$serv
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/prisma.js [app-route] (ecmascript)");
 ;
 ;
-// Helper: returns today's time window (00:00 → 23:59)
 function getTodayRange() {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
@@ -93,44 +91,87 @@ function getTodayRange() {
         end
     };
 }
+function calculateTarget(user) {
+    if (!user) return 0;
+    const isMetric = user.unitSystem === "metric";
+    const weightKg = isMetric ? user.weight : user.weight / 2.20462;
+    const heightCm = isMetric ? user.height : user.height * 2.54;
+    const age = user.age ?? 30;
+    const sexAdj = user.sex === "female" ? -161 : 5;
+    const bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + sexAdj;
+    const activityFactor = {
+        sedentary: 1.2,
+        light: 1.375,
+        moderate: 1.55,
+        high: 1.725
+    }[user.activityLevel] ?? 1.2;
+    const goalAdj = {
+        lose: -400,
+        maintain: 0,
+        gain: 400,
+        performance: 200
+    }[user.goal] ?? 0;
+    return Math.max(1200, Math.round(bmr * activityFactor + goalAdj));
+}
 async function GET() {
     try {
-        // FPV: use most recently created user as the active user (no auth yet)
         const activeUser = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].user.findFirst({
             orderBy: {
                 id: "desc"
-            },
-            select: {
-                id: true,
-                firstName: true,
-                preferredName: true
             }
         });
-        const USER_ID = activeUser?.id ?? 1;
+        if (!activeUser) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: "No users found. Please register first."
+            }, {
+                status: 404
+            });
+        }
         const { start, end } = getTodayRange();
-        // Use the active user info
-        const user = activeUser;
-        // Fetch all food logs from today
-        const logs = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].foodLog.findMany({
+        const logs = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].dailyFoodLog.findMany({
             where: {
-                userId: USER_ID,
-                createdAt: {
+                userId: activeUser.id,
+                date: {
                     gte: start,
                     lte: end
                 }
             }
         });
-        // Sum calories for today's intake
-        const caloriesConsumed = logs.reduce((sum, item)=>sum + item.calories, 0);
-        // FPV static calorie target
-        const caloriesTarget = 2200;
+        const totals = logs.reduce((acc, item)=>{
+            acc.calories += item.calories;
+            acc.protein += item.protein;
+            acc.carbs += item.carbs;
+            acc.fat += item.fat;
+            return acc;
+        }, {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0
+        });
+        const caloriesTarget = calculateTarget(activeUser);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            user,
+            user: {
+                id: activeUser.id,
+                firstName: activeUser.firstName,
+                preferredName: activeUser.preferredName
+            },
             caloriesTarget,
-            caloriesConsumed,
+            caloriesConsumed: totals.calories,
+            macros: {
+                protein: totals.protein,
+                carbs: totals.carbs,
+                fat: totals.fat
+            },
+            workouts: [],
             foods: logs.map((item)=>({
+                    id: item.id,
                     name: item.name,
-                    calories: item.calories
+                    calories: item.calories,
+                    protein: item.protein,
+                    carbs: item.carbs,
+                    fat: item.fat,
+                    quantity: item.quantity
                 }))
         }, {
             status: 200

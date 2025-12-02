@@ -1,7 +1,5 @@
-// postcss.config.js
-module.exports = {
-  plugins: {
-    "@tailwindcss/postcss": {},   // This is Tailwind’s new PostCSS plugin
-    autoprefixer: {},
-  },
-};
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
+// Bridge to the existing CJS PostCSS config.
+export default require("./postcss.config.cjs");

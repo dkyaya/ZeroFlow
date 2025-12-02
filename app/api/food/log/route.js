@@ -1,42 +1,89 @@
 // app/api/food/log/route.js
-// Adds a new food log entry for the current day.
-// FPV uses a placeholder userId: 1 because full auth is not implemented.
+// Logs a food entry using the USDA search results (calories + macros + quantity).
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request) {
   try {
-    const { name, calories } = await request.json();
+    const body = await request.json();
+    const {
+      fdcId = null,
+      name,
+      calories,
+      protein = 0,
+      carbs = 0,
+      fat = 0,
+      quantity = 1,
+    } = body || {};
 
-    // Basic validation for FPV
-    if (!name || !calories) {
+    if (!name || calories === undefined) {
       return NextResponse.json(
         { error: "Food name and calories are required" },
         { status: 400 }
       );
     }
 
-    const cal = Number(calories);
-    if (isNaN(cal) || cal <= 0) {
+    const qty = parseInt(quantity, 10);
+    if (!Number.isInteger(qty) || qty <= 0) {
+      return NextResponse.json(
+        { error: "Quantity must be a positive integer" },
+        { status: 400 }
+      );
+    }
+
+    const calPerUnit = Number(calories);
+    if (isNaN(calPerUnit) || calPerUnit <= 0) {
       return NextResponse.json(
         { error: "Calories must be a positive number" },
         { status: 400 }
       );
     }
 
-    // Placeholder user (FPV simplification)
-    const USER_ID = 1;
+    const macroProtein = Math.round(Number(protein) || 0);
+    const macroCarbs = Math.round(Number(carbs) || 0);
+    const macroFat = Math.round(Number(fat) || 0);
 
-    const log = await prisma.foodLog.create({
+    // Resolve the active user (most recent) or create a placeholder
+    let activeUser = await prisma.user.findFirst({
+      orderBy: { id: "desc" },
+      select: { id: true },
+    });
+
+    if (!activeUser) {
+      activeUser = await prisma.user.create({
+        data: {
+          firstName: "User",
+          lastName: "Placeholder",
+          email: `placeholder-${Date.now()}@example.com`,
+          password: "placeholder",
+          height: 0,
+          weight: 0,
+          age: 0,
+          sex: "unknown",
+          goal: "maintain",
+          activityLevel: "light",
+          unitSystem: "metric",
+        },
+        select: { id: true },
+      });
+    }
+
+    const entry = await prisma.dailyFoodLog.create({
       data: {
-        name,
-        calories: cal,
-        userId: USER_ID,
+        userId: activeUser.id,
+        foodId: fdcId ? Number(fdcId) : null,
+        name: name.trim(),
+        calories: Math.round(calPerUnit),
+        protein: macroProtein,
+        carbs: macroCarbs,
+        fat: macroFat,
+        quantity: qty,
+        date: new Date(),
       },
     });
 
-    return NextResponse.json(log, { status: 201 });
+    return NextResponse.json({ success: true, entry }, { status: 201 });
   } catch (err) {
     console.error("Food log error:", err);
     return NextResponse.json(

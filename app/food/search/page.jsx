@@ -27,7 +27,7 @@ export default function SearchFoodPage() {
     }
 
     const data = await res.json();
-    setResults(data);
+    setResults(data.results || []);
   }
 
   return (
@@ -59,13 +59,25 @@ export default function SearchFoodPage() {
 
       {/* Results */}
       <ul className="flex flex-col gap-3">
-        {results.map((item, idx) => (
+        {results.map((item) => (
           <li
-            key={idx}
+            key={item.fdcId ?? item.name}
             className="bg-white p-4 shadow-sm border rounded-lg flex justify-between"
           >
-            <span>{item.name}</span>
-            <span>{item.calories} cal</span>
+            <div className="flex flex-col">
+              <span className="font-medium">{item.name}</span>
+              {item.brandName && (
+                <span className="text-xs text-gray-500">{item.brandName}</span>
+              )}
+              <span className="text-xs text-gray-500">
+                {Math.round(item.macros?.protein ?? 0)}g P ·{" "}
+                {Math.round(item.macros?.carbs ?? 0)}g C ·{" "}
+                {Math.round(item.macros?.fat ?? 0)}g F
+              </span>
+            </div>
+            <span className="text-sm text-slate-700">
+              {Math.round(item.macros?.calories ?? 0)} cal
+            </span>
           </li>
         ))}
       </ul>

@@ -5,51 +5,57 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "../../components/logo";
 
-import BarcodeScanner from "../../components/BarcodeScanner";
 import FoodAutocomplete from "../../components/FoodAutocomplete";
-import { findFoodByBarcode } from "@/lib/findFoodByBarcode";
 
 export default function LogFoodPage() {
   const router = useRouter();
 
-  const [showScanner, setShowScanner] = useState(false);
   const [foodName, setFoodName] = useState("");
-  const [calories, setCalories] = useState("");
-  const [category, setCategory] = useState("");
+  const [calories, setCalories] = useState(0);
+  const [protein, setProtein] = useState(0);
+  const [carbs, setCarbs] = useState(0);
+  const [fat, setFat] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [error, setError] = useState("");
 
   // When user selects from autocomplete
   function handleSelect(item) {
     setFoodName(item.name);
-    setCalories(item.calories);
-    setCategory(item.category || "");
-  }
-
-  // When barcode scan succeeds
-  function handleBarcodeDetected(code) {
-    const match = findFoodByBarcode(code);
-
-    if (match) {
-      setFoodName(match.name);
-      setCalories(match.calories);
-      setCategory(match.category || "");
-    } else {
-      alert(`Unknown barcode: ${code}`);
-    }
-
-    setShowScanner(false);
+    const macros = item.macros || {};
+    setCalories(Math.round(macros.calories ?? 0));
+    setProtein(Math.round(macros.protein ?? 0));
+    setCarbs(Math.round(macros.carbs ?? 0));
+    setFat(Math.round(macros.fat ?? 0));
+    setQuantity(1);
   }
 
   // SUBMIT → Add food → Redirect to dashboard
   async function handleSubmit(e) {
     e.preventDefault();
 
+    if (!foodName || calories <= 0) {
+      setError("Please select a food first.");
+      return;
+    }
+
+    setConfirmOpen(true);
+  }
+
+  async function handleConfirmLog() {
+    setConfirmOpen(false);
+    setError("");
+
     const res = await fetch("/api/food/log", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: foodName,
-        calories: Number(calories),
-        category,
+        calories: Number(calories) * quantity,
+        protein: Number(protein) * quantity,
+        carbs: Number(carbs) * quantity,
+        fat: Number(fat) * quantity,
+        quantity,
       }),
     });
 
@@ -80,65 +86,48 @@ export default function LogFoodPage() {
         </div>
       </nav>
 
-      {/* SCANNER OVERLAY */}
-      {showScanner && (
-        <BarcodeScanner
-          onDetected={handleBarcodeDetected}
-          onClose={() => setShowScanner(false)}
-        />
-      )}
-
       {/* -------------------------------------------------- */}
       {/* PAGE CONTENT */}
       {/* -------------------------------------------------- */}
       <section className="max-w-xl mx-auto px-6 mt-10">
         <h1 className="text-3xl font-semibold text-center">Log Food</h1>
         <p className="text-slate-500 text-center mt-1">
-          Add meals quickly with search or barcode scan.
+          Add meals quickly with search and confirm the details.
         </p>
 
         <form
           onSubmit={handleSubmit}
           className="bg-white border rounded-xl shadow-xl p-6 mt-8 flex flex-col gap-4"
         >
+          {error && (
+            <p className="text-red-600 text-sm text-center">{error}</p>
+          )}
           {/* AUTOCOMPLETE */}
           <FoodAutocomplete onSelect={handleSelect} />
 
-          {/* Food name */}
-          <input
-            value={foodName}
-            onChange={e => setFoodName(e.target.value)}
-            placeholder="Food name"
-            className="border px-4 py-2 rounded-lg"
-            required
-          />
+          {/* Selected summary */}
+          <div className="p-4 border rounded-lg bg-slate-50">
+            <p className="font-semibold text-slate-900">{foodName || "No food selected"}</p>
+            <p className="text-sm text-slate-600 mt-1">
+              {Math.round(calories)} kcal · {Math.round(protein)}g P · {Math.round(carbs)}g C · {Math.round(fat)}g F
+            </p>
+          </div>
 
-          {/* Calories */}
-          <input
-            value={calories}
+          {/* Quantity */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-slate-700">Quantity</label>
+            <input
+            value={quantity}
             type="number"
-            onChange={e => setCalories(e.target.value)}
-            placeholder="Calories"
-            className="border px-4 py-2 rounded-lg"
-            required
-          />
-
-          {/* Category */}
-          <input
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-            placeholder="Category (optional)"
+            min={1}
+            step={1}
+            onChange={(e) => {
+              const val = parseInt(e.target.value, 10);
+              setQuantity(Number.isInteger(val) && val > 0 ? val : 1);
+            }}
             className="border px-4 py-2 rounded-lg"
           />
-
-          {/* Barcode Scan Button */}
-          <button
-            type="button"
-            onClick={() => setShowScanner(true)}
-            className="py-2 px-4 rounded-lg border border-blue-700 text-blue-700 hover:bg-blue-50 transition"
-          >
-            Scan Barcode
-          </button>
+          </div>
 
           {/* Submit */}
           <button
@@ -148,6 +137,42 @@ export default function LogFoodPage() {
             Log Food
           </button>
         </form>
+
+        {/* Confirmation modal */}
+        {confirmOpen && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md border border-slate-200">
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                Confirm Log
+              </h3>
+              <p className="text-slate-700">
+                <span className="font-semibold">{foodName}</span>
+              </p>
+              <p className="text-slate-600 text-sm mt-1">
+                {Math.round(calories)} kcal · {Math.round(protein)}g P ·{" "}
+                {Math.round(carbs)}g C · {Math.round(fat)}g F
+              </p>
+              <p className="text-slate-600 text-sm mt-1">Quantity: {quantity}</p>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setConfirmOpen(false)}
+                  className="flex-1 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmLog}
+                  className="flex-1 py-2 rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition shadow-sm"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </main>
   );
