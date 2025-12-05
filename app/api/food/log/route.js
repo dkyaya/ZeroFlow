@@ -3,6 +3,7 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 
 export async function POST(request) {
   try {
@@ -24,18 +25,19 @@ export async function POST(request) {
       );
     }
 
-    const qty = parseInt(quantity, 10);
-    if (!Number.isInteger(qty) || qty <= 0) {
+    // Allow decimal quantities (servings like 0.5, 1.5, etc.)
+    const qty = parseFloat(quantity);
+    if (isNaN(qty) || qty <= 0) {
       return NextResponse.json(
-        { error: "Quantity must be a positive integer" },
+        { error: "Quantity must be a positive number" },
         { status: 400 }
       );
     }
 
     const calPerUnit = Number(calories);
-    if (isNaN(calPerUnit) || calPerUnit <= 0) {
+    if (isNaN(calPerUnit) || calPerUnit < 0) {
       return NextResponse.json(
-        { error: "Calories must be a positive number" },
+        { error: "Calories must be a non-negative number" },
         { status: 400 }
       );
     }
@@ -44,29 +46,30 @@ export async function POST(request) {
     const macroCarbs = Math.round(Number(carbs) || 0);
     const macroFat = Math.round(Number(fat) || 0);
 
-    // Resolve the active user (most recent) or create a placeholder
-    let activeUser = await prisma.user.findFirst({
-      orderBy: { id: "desc" },
-      select: { id: true },
-    });
+    // Resolve the active user from cookie or fallback
+    const cookieStore = await cookies();
+    const userIdCookie = cookieStore.get("userId");
+    let activeUser = null;
 
-    if (!activeUser) {
-      activeUser = await prisma.user.create({
-        data: {
-          firstName: "User",
-          lastName: "Placeholder",
-          email: `placeholder-${Date.now()}@example.com`,
-          password: "placeholder",
-          height: 0,
-          weight: 0,
-          age: 0,
-          sex: "unknown",
-          goal: "maintain",
-          activityLevel: "light",
-          unitSystem: "metric",
-        },
+    if (userIdCookie) {
+      activeUser = await prisma.user.findUnique({
+        where: { id: parseInt(userIdCookie.value) },
         select: { id: true },
       });
+    }
+
+    if (!activeUser) {
+      activeUser = await prisma.user.findFirst({
+        orderBy: { id: "desc" },
+        select: { id: true },
+      });
+    }
+
+    if (!activeUser) {
+      return NextResponse.json(
+        { error: "No user found. Please register first." },
+        { status: 401 }
+      );
     }
 
     const entry = await prisma.dailyFoodLog.create({

@@ -23,6 +23,8 @@ model User {
   unitSystem     String
 
   foodLogs       DailyFoodLog[]
+  workoutLogs    WorkoutLog[]
+  favorites      FavoriteFood[]
   createdAt      DateTime @default(now())
 }
 
@@ -37,6 +39,32 @@ model DailyFoodLog {
   fat       Int
   quantity  Float     @default(1)
   date      DateTime
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model WorkoutLog {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  type           String
+  duration       Int      // minutes
+  caloriesBurned Int
+  rpe            Int?     // Rate of Perceived Exertion
+  notes          String?
+  date           DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model FavoriteFood {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  calories  Int
+  protein   Int
+  carbs     Int
+  fat       Int
+  quantity  Float    @default(1)
 
   user      User     @relation(fields: [userId], references: [id])
 }
